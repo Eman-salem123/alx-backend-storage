@@ -1,17 +1,15 @@
--- Creates a trigger which is useful for email validation
--- It reset the attribute valid_email
-
-DELIMITER //
-
-CREATE TRIGGER trigger_email_validation 
+-- Creates a trigger that resets the attribute valid_email
+-- only when the email has been changed.
+DROP TRIGGER IF EXISTS validate_email;
+DELIMITER $$
+CREATE TRIGGER validate_email
 BEFORE UPDATE ON users
 FOR EACH ROW
 BEGIN
-    IF NEW.email != OLD.email THEN
-        -- UPDATE users
-        SET NEW.valid_email = CASE WHEN NEW.valid_email = 0 THEN 1 ELSE 0 END;
-        -- WHERE id = NEW.id;
+    IF OLD.email != NEW.email THEN
+        SET NEW.valid_email = 0;
+    ELSE
+        SET NEW.valid_email = NEW.valid_email;
     END IF;
-END //
-
+END $$
 DELIMITER ;
